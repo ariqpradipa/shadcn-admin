@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { IconAlertTriangle } from '@tabler/icons-react'
-import { toast } from '@/hooks/use-toast'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ConfirmDialog } from '@/components/confirm-dialog'
+import { toast } from '@/hooks/use-toast'
+import { IconAlertTriangle } from '@tabler/icons-react'
+import axios from 'axios'
+import { useState } from 'react'
 import { User } from '../data/schema'
 
 interface Props {
@@ -20,6 +21,21 @@ export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
 
   const handleDelete = () => {
     if (value.trim() !== currentRow.username) return
+
+    axios.delete(`/users/${currentRow.id}`)
+      .then(() => {
+        toast({
+          title: 'User deleted',
+          description: `User ${currentRow.username} has been deleted.`,
+        })
+      })
+      .catch((error) => {
+        toast({
+          title: 'Error deleting user',
+          description: error.response.data.message,
+          variant: 'destructive',
+        })
+      })
 
     onOpenChange(false)
     toast({
@@ -43,7 +59,7 @@ export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
       title={
         <span className='text-destructive'>
           <IconAlertTriangle
-            className='mr-1 inline-block stroke-destructive'
+            className='inline-block mr-1 stroke-destructive'
             size={18}
           />{' '}
           Delete User

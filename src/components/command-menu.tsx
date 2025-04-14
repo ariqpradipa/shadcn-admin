@@ -1,13 +1,3 @@
-import React from 'react'
-import { useNavigate } from '@tanstack/react-router'
-import {
-  IconArrowRightDashed,
-  IconDeviceLaptop,
-  IconMoon,
-  IconSun,
-} from '@tabler/icons-react'
-import { useSearch } from '@/context/search-context'
-import { useTheme } from '@/context/theme-context'
 import {
   CommandDialog,
   CommandEmpty,
@@ -17,6 +7,16 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
+import { useSearch } from '@/context/search-context'
+import { useTheme } from '@/context/theme-context'
+import {
+  IconArrowRightDashed,
+  IconDeviceLaptop,
+  IconMoon,
+  IconSun,
+} from '@tabler/icons-react'
+import { useNavigate } from '@tanstack/react-router'
+import React from 'react'
 import { sidebarData } from './layout/data/sidebar-data'
 import { ScrollArea } from './ui/scroll-area'
 
@@ -37,7 +37,7 @@ export function CommandMenu() {
     <CommandDialog modal open={open} onOpenChange={setOpen}>
       <CommandInput placeholder='Type a command or search...' />
       <CommandList>
-        <ScrollArea type='hover' className='h-72 pr-1'>
+        <ScrollArea type='hover' className='pr-1 h-72'>
           <CommandEmpty>No results found.</CommandEmpty>
           {sidebarData.navGroups.map((group) => (
             <CommandGroup key={group.title} heading={group.title}>
@@ -51,7 +51,7 @@ export function CommandMenu() {
                         runCommand(() => navigate({ to: navItem.url }))
                       }}
                     >
-                      <div className='mr-2 flex h-4 w-4 items-center justify-center'>
+                      <div className='flex items-center justify-center w-4 h-4 mr-2'>
                         <IconArrowRightDashed className='size-2 text-muted-foreground/80' />
                       </div>
                       {navItem.title}
@@ -66,7 +66,7 @@ export function CommandMenu() {
                       runCommand(() => navigate({ to: subItem.url }))
                     }}
                   >
-                    <div className='mr-2 flex h-4 w-4 items-center justify-center'>
+                    <div className='flex items-center justify-center w-4 h-4 mr-2'>
                       <IconArrowRightDashed className='size-2 text-muted-foreground/80' />
                     </div>
                     {subItem.title}

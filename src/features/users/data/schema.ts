@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+import { groupSchema } from '@/features/groups/data/schema';
+import { organizationSchema } from '@/features/organizations/data/schema';
+
 const userStatusSchema = z
   .boolean()
   .transform((val) => (val ? 'active' : 'inactive')); // Transform boolean to string
@@ -12,23 +15,7 @@ const userRoleSchema = z.union([
   z.literal('admin'),
 ]);
 
-const userGroupSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
-}).nullable();
-
-const userOrganizationSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
-}).nullable();
-
-const userSchema = z.object({
+export const userSchema = z.object({
   id: z.string(),
   microsoftEntraId: z.string(),
   username: z.string(),
@@ -42,8 +29,8 @@ const userSchema = z.object({
   isActive: userStatusSchema,
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
-  userGroup: userGroupSchema,
-  userOrgnanization: userOrganizationSchema,
+  userGroup: groupSchema,
+  userOrgnanization: organizationSchema,
 });
 
 export type User = z.infer<typeof userSchema>

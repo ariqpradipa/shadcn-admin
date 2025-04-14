@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useState } from 'react'
 
 import { SelectDropdown } from '@/components/select-dropdown'
 import { Button } from '@/components/ui/button'
@@ -19,15 +20,21 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { groups } from '@/features/groups/data/groups'
 import { toast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
+import axios from 'axios'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { userTypes } from '../data/data'
-import { User } from '../data/schema'
+import { organizations } from '../data/organizations'
+
+import { groupListSchema } from '@/features/groups/data/schema'
+import { User, userOrganizationListSchema } from '../data/schema'
 
 const formSchema = z
   .object({
+    id: z.string().optional(),
     email: z
       .string()
       .min(1, { message: 'Email is required.' })
@@ -46,12 +53,39 @@ interface Props {
 }
 
 export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
+
+  const [groupList, setGroupList]: any = useState([]);
+  const [organizationList, setOrganizationList]: any = useState([]);
+
+  useEffect(() => {
+    const fetchGroups = async () => {
+      const data = await groups();
+      console.log("Data", data);
+      const parsed = groupListSchema.parse(data);
+      console.log("Parsed")
+      setGroupList(parsed);
+    };
+
+    const fetchOrganizations = async () => {
+      const data = await organizations();
+      console.log("Data", data);
+      const parsed = userOrganizationListSchema.parse(data);
+      console.log("Parsed")
+      setOrganizationList(parsed);
+    }
+
+    fetchOrganizations();
+    fetchGroups();
+  }, []);
+
   const isEdit = !!currentRow
   const form = useForm<UserForm>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
       ? {
         ...currentRow,
+        group: currentRow.groupId || "",
+        organization: currentRow.organizationId || "",
         isEdit,
       }
       : {
@@ -65,6 +99,59 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
 
   const onSubmit = (values: UserForm) => {
     form.reset()
+
+    const data = {
+      "email": values.email,
+      "role": values.role,
+      "groupId": values.group,
+      "organizationId": values.organization,
+    }
+
+    if (isEdit) {
+      // Update user logic
+      console.log('Updating user:', values)
+      // axios post request
+      axios.put(`/users/${values.id}`, data)
+        .then((response) => {
+          console.log('User updated successfully:', response.data)
+          toast({
+            title: 'User updated successfully',
+            description: 'The user has been updated.',
+            variant: 'default',
+          })
+        })
+        .catch((error) => {
+          console.error('Error updating user:', error)
+          toast({
+            title: 'Error updating user',
+            description: error.message,
+            variant: 'destructive',
+          })
+        })
+    } else {
+      // Create user logic
+      console.log('Creating user:', values)
+      // axios post request
+      axios.post('/users', data)
+        .then((response) => {
+          console.log('User created successfully:', response.data)
+          toast({
+            title: 'User created successfully',
+            description: 'The user has been created.',
+            variant: 'default',
+          })
+        })
+        .catch((error) => {
+          console.error('Error creating user:', error)
+          toast({
+            title: 'Error creating user',
+            description: error.message,
+            variant: 'destructive',
+          })
+        })
+    }
+
+    console.log(values)
     toast({
       title: 'You submitted the following values:',
       description: (
@@ -150,9 +237,9 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                       defaultValue={field.value}
                       onValueChange={field.onChange}
                       placeholder='Select a group'
-                      items={userTypes.map(({ label, value }) => ({
-                        label,
-                        value,
+                      items={groupList.map(({ name, id }: any) => ({
+                        label: name,
+                        value: id,
                       }))}
                     />
                     <FormMessage />
@@ -171,9 +258,9 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                       defaultValue={field.value}
                       onValueChange={field.onChange}
                       placeholder='Select an organization'
-                      items={userTypes.map(({ label, value }) => ({
-                        label,
-                        value,
+                      items={organizationList.map(({ name, id }: any) => ({
+                        label: name,
+                        value: id,
                       }))}
                     />
                     <FormMessage />
