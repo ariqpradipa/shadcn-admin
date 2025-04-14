@@ -9,12 +9,12 @@ export default function SignIn() {
         <div className='flex flex-col space-y-2 text-left'>
           <h1 className='text-2xl font-semibold tracking-tight'>Login</h1>
           <p className='text-sm text-muted-foreground'>
-            Enter your email and password below <br />
+            Enter your LDAP account below <br />
             to log into your account
           </p>
         </div>
         <UserAuthForm />
-        <p className='mt-4 px-8 text-center text-sm text-muted-foreground'>
+        <p className='px-8 mt-4 text-sm text-center text-muted-foreground'>
           By clicking login, you agree to our{' '}
           <a
             href='/terms'

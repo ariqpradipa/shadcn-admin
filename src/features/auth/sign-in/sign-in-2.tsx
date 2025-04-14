@@ -3,8 +3,8 @@ import { UserAuthForm } from './components/user-auth-form'
 
 export default function SignIn2() {
   return (
-    <div className='container relative grid h-svh flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0'>
-      <div className='relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex'>
+    <div className='container relative grid flex-col items-center justify-center h-svh lg:max-w-none lg:grid-cols-2 lg:px-0'>
+      <div className='relative flex-col hidden h-full p-10 text-white bg-muted dark:border-r lg:flex'>
         <div className='absolute inset-0 bg-zinc-900' />
         <div className='relative z-20 flex items-center text-lg font-medium'>
           <svg
@@ -15,7 +15,7 @@ export default function SignIn2() {
             strokeWidth='2'
             strokeLinecap='round'
             strokeLinejoin='round'
-            className='mr-2 h-6 w-6'
+            className='w-6 h-6 mr-2'
           >
             <path d='M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3' />
           </svg>
@@ -51,7 +51,7 @@ export default function SignIn2() {
             </p>
           </div>
           <UserAuthForm />
-          <p className='px-8 text-center text-sm text-muted-foreground'>
+          <p className='px-8 text-sm text-center text-muted-foreground'>
             By clicking login, you agree to our{' '}
             <a
               href='/terms'

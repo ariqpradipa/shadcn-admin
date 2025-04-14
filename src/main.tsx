@@ -1,15 +1,15 @@
-import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
-import { AxiosError } from 'axios'
+import { toast } from '@/hooks/use-toast'
+import { useAuthStore } from '@/stores/authStore'
+import { handleServerError } from '@/utils/handle-server-error'
 import {
   QueryCache,
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { useAuthStore } from '@/stores/authStore'
-import { handleServerError } from '@/utils/handle-server-error'
-import { toast } from '@/hooks/use-toast'
+import { AxiosError } from 'axios'
+import { StrictMode } from 'react'
+import ReactDOM from 'react-dom/client'
 import { FontProvider } from './context/font-context'
 import { ThemeProvider } from './context/theme-context'
 import './index.css'
@@ -90,6 +90,10 @@ declare module '@tanstack/react-router' {
     router: typeof router
   }
 }
+// set axios base url
+import axios from 'axios'
+
+axios.defaults.baseURL = import.meta.env.VITE_API_URL
 
 // Render the app
 const rootElement = document.getElementById('root')!

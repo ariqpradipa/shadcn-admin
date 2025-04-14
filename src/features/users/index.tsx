@@ -11,22 +11,35 @@ import UsersProvider from './context/users-context'
 import { userListSchema } from './data/schema'
 import { users } from './data/users'
 
+import { useEffect, useState } from 'react'
+
 export default function Users() {
-  // Parse user list
-  const userList = userListSchema.parse(users)
+  const [userList, setUserList]: any = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const data = await users();
+      console.log("Data", data);
+      const parsed = userListSchema.parse(data);
+      console.log("Parsed")
+      setUserList(parsed);
+    };
+
+    fetchUsers();
+  }, []);
 
   return (
     <UsersProvider>
       <Header fixed>
         <Search />
-        <div className='ml-auto flex items-center space-x-4'>
+        <div className='flex items-center ml-auto space-x-4'>
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
       </Header>
 
       <Main>
-        <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
+        <div className='flex flex-wrap items-center justify-between mb-2 space-y-2'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>User List</h2>
             <p className='text-muted-foreground'>
@@ -35,7 +48,7 @@ export default function Users() {
           </div>
           <UsersPrimaryButtons />
         </div>
-        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+        <div className='flex-1 px-4 py-1 -mx-4 overflow-auto lg:flex-row lg:space-x-12 lg:space-y-0'>
           <UsersTable data={userList} columns={columns} />
         </div>
       </Main>

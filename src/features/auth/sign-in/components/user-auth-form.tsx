@@ -1,10 +1,4 @@
-import { HTMLAttributes, useState } from 'react'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from '@tanstack/react-router'
-import { IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react'
-import { cn } from '@/lib/utils'
+import { PasswordInput } from '@/components/password-input'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -15,23 +9,22 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { PasswordInput } from '@/components/password-input'
+import { cn } from '@/lib/utils'
+import { zodResolver } from '@hookform/resolvers/zod'
+import axios from 'axios'
+import { HTMLAttributes, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 type UserAuthFormProps = HTMLAttributes<HTMLDivElement>
 
+// Updated schema to use username instead of email
 const formSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: 'Please enter your email' })
-    .email({ message: 'Invalid email address' }),
+  username: z.string().min(1, { message: 'Please enter your username' }),
   password: z
     .string()
-    .min(1, {
-      message: 'Please enter your password',
-    })
-    .min(7, {
-      message: 'Password must be at least 7 characters long',
-    }),
+    .min(1, { message: 'Please enter your password' })
+    .min(7, { message: 'Password must be at least 7 characters long' }),
 })
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
@@ -40,34 +33,42 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
-
-    setTimeout(() => {
+    try {
+      // Send request to the Fastify LDAP backend
+      const response = await axios.post('http://10.250.197.48:3001/api/sign-in', {
+        username: data.username,
+        password: data.password,
+      })
+      // Log the authentication result
+      console.log('Auth Result:', response.data)
+    } catch (error: any) {
+      // Log the error
+      console.error('Auth Error:', error.response?.data || error.message)
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
   }
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className='grid gap-2'>
+          <div className="grid gap-2">
             <FormField
               control={form.control}
-              name='email'
+              name="username"
               render={({ field }) => (
-                <FormItem className='space-y-1'>
-                  <FormLabel>Email</FormLabel>
+                <FormItem className="space-y-1">
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder='name@example.com' {...field} />
+                    <Input placeholder="yourusername" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -75,58 +76,22 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             />
             <FormField
               control={form.control}
-              name='password'
+              name="password"
               render={({ field }) => (
-                <FormItem className='space-y-1'>
-                  <div className='flex items-center justify-between'>
+                <FormItem className="space-y-1">
+                  <div className="flex items-center justify-between">
                     <FormLabel>Password</FormLabel>
-                    <Link
-                      to='/forgot-password'
-                      className='text-sm font-medium text-muted-foreground hover:opacity-75'
-                    >
-                      Forgot password?
-                    </Link>
                   </div>
                   <FormControl>
-                    <PasswordInput placeholder='********' {...field} />
+                    <PasswordInput placeholder="********" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button className='mt-2' disabled={isLoading}>
-              Login
+            <Button className="mt-2" disabled={isLoading}>
+              {isLoading ? 'Logging in...' : 'Login'}
             </Button>
-
-            <div className='relative my-2'>
-              <div className='absolute inset-0 flex items-center'>
-                <span className='w-full border-t' />
-              </div>
-              <div className='relative flex justify-center text-xs uppercase'>
-                <span className='bg-background px-2 text-muted-foreground'>
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
-            <div className='flex items-center gap-2'>
-              <Button
-                variant='outline'
-                className='w-full'
-                type='button'
-                disabled={isLoading}
-              >
-                <IconBrandGithub className='h-4 w-4' /> GitHub
-              </Button>
-              <Button
-                variant='outline'
-                className='w-full'
-                type='button'
-                disabled={isLoading}
-              >
-                <IconBrandFacebook className='h-4 w-4' /> Facebook
-              </Button>
-            </div>
           </div>
         </form>
       </Form>

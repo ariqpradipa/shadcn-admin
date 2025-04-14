@@ -1,8 +1,8 @@
-import { ColumnDef } from '@tanstack/react-table'
-import { cn } from '@/lib/utils'
+import LongText from '@/components/long-text'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import LongText from '@/components/long-text'
+import { cn } from '@/lib/utils'
+import { ColumnDef } from '@tanstack/react-table'
 import { callTypes, userTypes } from '../data/data'
 import { User } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
@@ -57,13 +57,12 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
-    id: 'fullName',
+    id: 'full_name',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Name' />
     ),
     cell: ({ row }) => {
-      const { firstName, lastName } = row.original
-      const fullName = `${firstName} ${lastName}`
+      const { fullName } = row.original
       return <LongText className='max-w-36'>{fullName}</LongText>
     },
     meta: { className: 'w-36' },
@@ -78,34 +77,26 @@ export const columns: ColumnDef<User>[] = [
     ),
   },
   {
-    accessorKey: 'phoneNumber',
+    id: 'group',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phone Number' />
-    ),
-    cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
-    enableSorting: false,
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
+      <DataTableColumnHeader column={column} title='Group' />
     ),
     cell: ({ row }) => {
-      const { status } = row.original
-      const badgeColor = callTypes.get(status)
-      return (
-        <div className='flex space-x-2'>
-          <Badge variant='outline' className={cn('capitalize', badgeColor)}>
-            {row.getValue('status')}
-          </Badge>
-        </div>
-      )
+      const { userGroup } = row.original
+      return <LongText className='max-w-36'>{userGroup?.name}</LongText>
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+    meta: { className: 'w-36' },
+  },
+  {
+    id: 'organization',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Organization' />
+    ),
+    cell: ({ row }) => {
+      const { userOrgnanization } = row.original
+      return <LongText className='max-w-36'>{userOrgnanization?.name}</LongText>
     },
-    enableHiding: false,
-    enableSorting: false,
+    meta: { className: 'w-36' },
   },
   {
     accessorKey: 'role',
@@ -134,6 +125,28 @@ export const columns: ColumnDef<User>[] = [
     },
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    accessorKey: 'status',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Status' />
+    ),
+    cell: ({ row }) => {
+      const { isActive } = row.original
+      const badgeColor = callTypes.get(isActive)
+      return (
+        <div className='flex space-x-2'>
+          <Badge variant='outline' className={cn('capitalize', badgeColor)}>
+            {isActive}
+          </Badge>
+        </div>
+      )
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+    enableHiding: false,
+    enableSorting: false,
   },
   {
     id: 'actions',
