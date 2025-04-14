@@ -1,5 +1,10 @@
 'use client'
+import axios from 'axios'
 import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 
 import { SelectDropdown } from '@/components/select-dropdown'
 import { Button } from '@/components/ui/button'
@@ -20,17 +25,16 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { groups } from '@/features/groups/data/groups'
 import { toast } from '@/hooks/use-toast'
-import { zodResolver } from '@hookform/resolvers/zod'
-import axios from 'axios'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { userTypes } from '../data/data'
-import { organizations } from '../data/organizations'
 
+import { userTypes } from '../data/data'
+import { User } from '../data/schema'
+
+import { groups } from '@/features/groups/data/groups'
 import { groupListSchema } from '@/features/groups/data/schema'
-import { User, userOrganizationListSchema } from '../data/schema'
+
+import { organizations } from '@/features/organizations/data/organizations'
+import { organizationListSchema } from '@/features/organizations/data/schema'
 
 const formSchema = z
   .object({
@@ -69,7 +73,7 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
     const fetchOrganizations = async () => {
       const data = await organizations();
       console.log("Data", data);
-      const parsed = userOrganizationListSchema.parse(data);
+      const parsed = organizationListSchema.parse(data);
       console.log("Parsed")
       setOrganizationList(parsed);
     }
