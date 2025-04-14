@@ -2,22 +2,22 @@ import {
   IconBarrierBlock,
   IconBrowserCheck,
   IconBug,
-  IconChecklist,
   IconError404,
   IconHelp,
   IconLayoutDashboard,
   IconLock,
   IconLockAccess,
-  IconMessages,
   IconNotification,
   IconPackages,
   IconPalette,
   IconServerOff,
   IconSettings,
+  IconSitemap,
   IconTool,
   IconUserCog,
   IconUserOff,
   IconUsers,
+  IconUsersGroup
 } from '@tabler/icons-react'
 import { AudioWaveform, Command, GalleryVerticalEnd } from 'lucide-react'
 import { type SidebarData } from '../types'
@@ -30,7 +30,7 @@ export const sidebarData: SidebarData = {
   },
   teams: [
     {
-      name: 'Shadcn Admin',
+      name: 'AION Admin',
       logo: Command,
       plan: 'Vite + ShadcnUI',
     },
@@ -55,25 +55,24 @@ export const sidebarData: SidebarData = {
           icon: IconLayoutDashboard,
         },
         {
-          title: 'Tasks',
-          url: '/tasks',
-          icon: IconChecklist,
-        },
-        {
           title: 'Apps',
           url: '/apps',
           icon: IconPackages,
         },
         {
-          title: 'Chats',
-          url: '/chats',
-          badge: '3',
-          icon: IconMessages,
-        },
-        {
           title: 'Users',
           url: '/users',
           icon: IconUsers,
+        },
+        {
+          title: 'Groups',
+          url: '/groups',
+          icon: IconUsersGroup,
+        },
+        {
+          title: 'Organizations',
+          url: '/organizations',
+          icon: IconSitemap,
         },
       ],
     },
