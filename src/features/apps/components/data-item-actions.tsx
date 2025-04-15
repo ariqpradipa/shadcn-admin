@@ -8,17 +8,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
-import { Row } from '@tanstack/react-table'
-import { useUsers } from '../context/users-context'
-import { User } from '../data/schema'
+import { IconAlertHexagon, IconEdit, IconTrash } from '@tabler/icons-react'
 
-interface DataTableRowActionsProps {
-  row: Row<User>
-}
-
-export function DataTableRowActions({ row }: DataTableRowActionsProps) {
-  const { setOpen, setCurrentRow } = useUsers()
+export function DataItemAction() {
   return (
     <>
       <DropdownMenu modal={false}>
@@ -33,10 +25,22 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
           <DropdownMenuItem
-            onClick={() => {
-              setCurrentRow(row.original)
-              setOpen('edit')
-            }}
+          // onClick={() => {
+          //   setCurrentRow(row.original)
+          //   setOpen('edit')
+          // }}
+          >
+            Escalation
+            <DropdownMenuShortcut>
+              <IconAlertHexagon size={16} />
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+          // onClick={() => {
+          //   setCurrentRow(row.original)
+          //   setOpen('edit')
+          // }}
           >
             Edit
             <DropdownMenuShortcut>
@@ -45,11 +49,11 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => {
-              setCurrentRow(row.original)
-              setOpen('delete')
-            }}
-            className='!text-red-500'
+          // onClick={() => {
+          //   setCurrentRow(row.original)
+          //   setOpen('delete')
+          // }}
+          // className='!text-red-500'
           >
             Delete
             <DropdownMenuShortcut>

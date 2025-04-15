@@ -1,10 +1,8 @@
-import { useState } from 'react'
-import {
-  IconAdjustmentsHorizontal,
-  IconSortAscendingLetters,
-  IconSortDescendingLetters,
-} from '@tabler/icons-react'
-import { Button } from '@/components/ui/button'
+import { Header } from '@/components/layout/header'
+import { Main } from '@/components/layout/main'
+import { ProfileDropdown } from '@/components/profile-dropdown'
+import { Search } from '@/components/search'
+import { ThemeSwitch } from '@/components/theme-switch'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -14,45 +12,66 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
+import {
+  IconAdjustmentsHorizontal,
+  IconSortAscendingLetters,
+  IconSortDescendingLetters,
+} from '@tabler/icons-react'
+import { useEffect, useState } from 'react'
+import { DataItemAction } from './components/data-item-actions'
 import { apps } from './data/apps'
 
 const appText = new Map<string, string>([
   ['all', 'All Apps'],
-  ['connected', 'Connected'],
-  ['notConnected', 'Not Connected'],
+  ['Business Support', 'Business Support'],
+  ['Business Important', 'Business Important'],
+  ['Business Critical', 'Business Critical'],
+  ['Mission Critical', 'Mission Critical']
 ])
 
 export default function Apps() {
   const [sort, setSort] = useState('ascending')
   const [appType, setAppType] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
+  interface App {
+    name: string;
+    catalogId: string;
+    description: string;
+    priority: string;
+  }
 
-  const filteredApps = apps
+  const [appList, setAppList] = useState<App[]>([])
+
+  useEffect(() => {
+    const fetchApps = async () => {
+      const data = await apps();
+      setAppList(data);
+    };
+
+    fetchApps();
+  }, []);
+
+  const filteredApps = appList
     .sort((a, b) =>
       sort === 'ascending'
         ? a.name.localeCompare(b.name)
         : b.name.localeCompare(a.name)
     )
-    .filter((app) =>
-      appType === 'connected'
-        ? app.connected
-        : appType === 'notConnected'
-          ? !app.connected
-          : true
+    .filter((app: { name: string; catalogId: string }) =>
+      app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.catalogId.toLowerCase().includes(searchTerm.toLowerCase())
     )
-    .filter((app) => app.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter((app: any) => {
+      if (appType === 'all') return true
+      return app.priority === appType
+    });
 
   return (
     <>
       {/* ===== Top Heading ===== */}
       <Header>
         <Search />
-        <div className='ml-auto flex items-center gap-4'>
+        <div className='flex items-center gap-4 ml-auto'>
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
@@ -62,13 +81,13 @@ export default function Apps() {
       <Main fixed>
         <div>
           <h1 className='text-2xl font-bold tracking-tight'>
-            App Integrations
+            Application Catalog
           </h1>
           <p className='text-muted-foreground'>
-            Here&apos;s a list of your apps for the integration!
+            Here&apos;s a list of Telkomsel Application Catalog.
           </p>
         </div>
-        <div className='my-4 flex items-end justify-between sm:my-0 sm:items-center'>
+        <div className='flex items-end justify-between my-4 sm:my-0 sm:items-center'>
           <div className='flex flex-col gap-4 sm:my-4 sm:flex-row'>
             <Input
               placeholder='Filter apps...'
@@ -77,13 +96,15 @@ export default function Apps() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <Select value={appType} onValueChange={setAppType}>
-              <SelectTrigger className='w-36'>
+              <SelectTrigger className='w-fit'>
                 <SelectValue>{appText.get(appType)}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value='all'>All Apps</SelectItem>
-                <SelectItem value='connected'>Connected</SelectItem>
-                <SelectItem value='notConnected'>Not Connected</SelectItem>
+                <SelectItem value='Business Support'>Business Support</SelectItem>
+                <SelectItem value='Business Critical'>Business Critical</SelectItem>
+                <SelectItem value='Business Important'>Business Important</SelectItem>
+                <SelectItem value='Mission Critical'>Mission Critical</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -111,33 +132,40 @@ export default function Apps() {
           </Select>
         </div>
         <Separator className='shadow' />
-        <ul className='faded-bottom no-scrollbar grid gap-4 overflow-auto pb-16 pt-4 md:grid-cols-2 lg:grid-cols-3'>
-          {filteredApps.map((app) => (
-            <li
-              key={app.name}
-              className='rounded-lg border p-4 hover:shadow-md'
-            >
-              <div className='mb-8 flex items-center justify-between'>
-                <div
-                  className={`flex size-10 items-center justify-center rounded-lg bg-muted p-2`}
+        {
+          appList.length === 0 ? (
+            <p className='text-sm text-muted-foreground'>
+              No apps found.
+            </p>
+          ) : (
+            <ul className='grid gap-4 pt-4 pb-16 overflow-auto faded-bottom no-scrollbar md:grid-cols-2 lg:grid-cols-3'>
+              {filteredApps.map((app) => (
+                <li
+                  key={app.name}
+                  className='p-4 border rounded-lg hover:shadow-md'
                 >
-                  {app.logo}
-                </div>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  className={`${app.connected ? 'border border-blue-300 bg-blue-50 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-950 dark:hover:bg-blue-900' : ''}`}
-                >
-                  {app.connected ? 'Connected' : 'Connect'}
-                </Button>
-              </div>
-              <div>
-                <h2 className='mb-1 font-semibold'>{app.name}</h2>
-                <p className='line-clamp-2 text-gray-500'>{app.desc}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  <div className='flex items-center justify-between mb-8'>
+                    <div>
+                      <p
+                        className='text-sm font-bold'
+                      >
+                        {app.catalogId}
+                      </p>
+                      <p className='text-xs text-gray-500'>
+                        {app.priority}
+                      </p>
+                    </div>
+                    <DataItemAction />
+                  </div>
+                  <div>
+                    <h2 className='mb-1 font-semibold'>{app.name}</h2>
+                    <p className='text-xs text-gray-500 line-clamp-2'>{app.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )
+        }
       </Main>
     </>
   )
