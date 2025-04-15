@@ -65,6 +65,9 @@ const AuthenticatedSettingsAppearanceLazyImport = createFileRoute(
 const AuthenticatedSettingsAccountLazyImport = createFileRoute(
   '/_authenticated/settings/account',
 )()
+const AuthenticatedAppsEscalationAppIdIndexLazyImport = createFileRoute(
+  '/_authenticated/apps/escalation/$appId/',
+)()
 
 // Create/Update Routes
 
@@ -269,6 +272,17 @@ const AuthenticatedSettingsAccountLazyRoute =
     ),
   )
 
+const AuthenticatedAppsEscalationAppIdIndexLazyRoute =
+  AuthenticatedAppsEscalationAppIdIndexLazyImport.update({
+    id: '/apps/escalation/$appId/',
+    path: '/apps/escalation/$appId/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/apps/escalation/$appId/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -434,6 +448,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUsersIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/apps/escalation/$appId/': {
+      id: '/_authenticated/apps/escalation/$appId/'
+      path: '/apps/escalation/$appId'
+      fullPath: '/apps/escalation/$appId'
+      preLoaderRoute: typeof AuthenticatedAppsEscalationAppIdIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
   }
 }
 
@@ -475,6 +496,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOrganizationsIndexLazyRoute: typeof AuthenticatedOrganizationsIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
+  AuthenticatedAppsEscalationAppIdIndexLazyRoute: typeof AuthenticatedAppsEscalationAppIdIndexLazyRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -489,6 +511,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedOrganizationsIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
+  AuthenticatedAppsEscalationAppIdIndexLazyRoute:
+    AuthenticatedAppsEscalationAppIdIndexLazyRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -517,6 +541,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
+  '/apps/escalation/$appId': typeof AuthenticatedAppsEscalationAppIdIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -540,6 +565,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
+  '/apps/escalation/$appId': typeof AuthenticatedAppsEscalationAppIdIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -567,6 +593,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
+  '/_authenticated/apps/escalation/$appId/': typeof AuthenticatedAppsEscalationAppIdIndexLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -594,6 +621,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/tasks'
     | '/users'
+    | '/apps/escalation/$appId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/500'
@@ -616,6 +644,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/users'
+    | '/apps/escalation/$appId'
   id:
     | '__root__'
     | '/_authenticated'
@@ -641,6 +670,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
+    | '/_authenticated/apps/escalation/$appId/'
   fileRoutesById: FileRoutesById
 }
 
@@ -700,7 +730,8 @@ export const routeTree = rootRoute
         "/_authenticated/help-center/",
         "/_authenticated/organizations/",
         "/_authenticated/tasks/",
-        "/_authenticated/users/"
+        "/_authenticated/users/",
+        "/_authenticated/apps/escalation/$appId/"
       ]
     },
     "/(auth)/500": {
@@ -788,6 +819,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/users/": {
       "filePath": "_authenticated/users/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/apps/escalation/$appId/": {
+      "filePath": "_authenticated/apps/escalation/$appId/index.lazy.tsx",
       "parent": "/_authenticated"
     }
   }

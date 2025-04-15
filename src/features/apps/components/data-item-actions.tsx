@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,11 +6,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import { IconAlertHexagon, IconEdit, IconTrash } from '@tabler/icons-react'
+} from '@/components/ui/dropdown-menu';
+import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { IconAlertHexagon, IconEdit, IconTrash } from '@tabler/icons-react';
+import { useNavigate } from '@tanstack/react-router';
 
-export function DataItemAction() {
+export function DataItemAction({ app }: any) {
+  const navigate = useNavigate();
+
   return (
     <>
       <DropdownMenu modal={false}>
@@ -25,10 +28,9 @@ export function DataItemAction() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
           <DropdownMenuItem
-          // onClick={() => {
-          //   setCurrentRow(row.original)
-          //   setOpen('edit')
-          // }}
+            onClick={() => {
+              navigate({ to: `/apps/escalation/${app.id}` });
+            }}
           >
             Escalation
             <DropdownMenuShortcut>

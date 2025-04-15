@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -17,7 +19,6 @@ import {
   IconSortAscendingLetters,
   IconSortDescendingLetters,
 } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
 import { DataItemAction } from './components/data-item-actions'
 import { apps } from './data/apps'
 
@@ -155,7 +156,7 @@ export default function Apps() {
                         {app.priority}
                       </p>
                     </div>
-                    <DataItemAction />
+                    <DataItemAction app={app} />
                   </div>
                   <div>
                     <h2 className='mb-1 font-semibold'>{app.name}</h2>
