@@ -10,6 +10,10 @@ interface EscalationContextType {
   setCurrentAppUserList: any
   currentAppUser: any
   setCurrentAppUser: any
+  currentApp: any
+  setCurrentApp: any
+  reloadIndex: boolean
+  setReloadIndex: any
 }
 
 const EscalationContext = React.createContext<EscalationContextType | null>(null)
@@ -22,6 +26,8 @@ export default function EscalationProvider({ children }: Props) {
   const [open, setOpen] = useDialogState<EscalationDialogType>(null)
   const [currentAppUserList, setCurrentAppUserList] = useState([])
   const [currentAppUser, setCurrentAppUser] = useState<any>(null)
+  const [currentApp, setCurrentApp] = useState<any>(null)
+  const [reloadIndex, setReloadIndex] = useState(false)
 
   return (
     <EscalationContext value={{
@@ -30,7 +36,12 @@ export default function EscalationProvider({ children }: Props) {
       currentAppUserList,
       setCurrentAppUserList,
       currentAppUser,
-      setCurrentAppUser
+      setCurrentAppUser,
+      currentApp,
+      setCurrentApp,
+      reloadIndex,
+      setReloadIndex,
+
     }}>
       {children}
     </EscalationContext>

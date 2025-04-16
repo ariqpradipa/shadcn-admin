@@ -5,3 +5,9 @@ export const appUserLevelsAppId = async (appId: string) => {
 
     return response.data.data;
 }
+
+export const apps = async (appId: string) => {
+    const response = await axios.get(`/apps/${appId}`);
+
+    return response.data.data;
+}

@@ -22,7 +22,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useState } from 'react'
-import { User } from '../data/schema'
 import { DataTablePagination } from './data-table-pagination'
 import { DataTableToolbar } from './data-table-toolbar'
 
@@ -34,7 +33,7 @@ declare module '@tanstack/react-table' {
 }
 
 interface DataTableProps {
-  columns: ColumnDef<User>[]
+  columns: ColumnDef<any>[]
   data: any
 }
 
@@ -45,9 +44,7 @@ export function UsersTable({ columns, data }: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useReactTable({
-    data: data.map((data: any) => ({
-      ...data.user,
-    })),
+    data,
     columns,
     state: {
       sorting,

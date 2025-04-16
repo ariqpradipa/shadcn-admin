@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/form'
 import { toast } from '@/hooks/use-toast'
 
-import { User } from '../data/schema'
+import { User } from '@/features/users/data/schema'
 
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
@@ -35,14 +35,15 @@ import { users } from '@/features/users/data/users'
 import { cn } from '@/lib/utils'
 import { CaretSortIcon } from '@radix-ui/react-icons'
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
+import axios from 'axios'
 import { CheckIcon } from 'lucide-react'
 import { useEscalation } from '../context/escalation-context'
 
 const formSchema = z
   .object({
     id: z.string().optional(),
-    user: z.string().min(1, { message: 'Group is required.' }),
-    level: z.number().min(1, { message: 'Role is required.' }),
+    user: z.string().min(1, { message: 'User is required.' }),
+    level: z.string().min(1, { message: 'Level is required.' }),
     isEdit: z.boolean(),
   })
 type UserForm = z.infer<typeof formSchema>
@@ -68,21 +69,9 @@ const appUserLevelList = [
   }
 ]
 
-const languages = [
-  { label: 'English', value: 'en' },
-  { label: 'French', value: 'fr' },
-  { label: 'German', value: 'de' },
-  { label: 'Spanish', value: 'es' },
-  { label: 'Portuguese', value: 'pt' },
-  { label: 'Russian', value: 'ru' },
-  { label: 'Japanese', value: 'ja' },
-  { label: 'Korean', value: 'ko' },
-  { label: 'Chinese', value: 'zh' },
-] as const
+export function EscalationActionDialog({ currentAppUser, open, onOpenChange }: Props) {
 
-export function UsersActionDialog({ currentAppUser, open, onOpenChange }: Props) {
-
-  const { currentAppUserList } = useEscalation()
+  const { currentAppUserList, currentApp, setReloadIndex } = useEscalation()
 
   const [notAttachedAppUserList, setNotAttachedAppUserList]: any = useState([]);
 
@@ -91,14 +80,19 @@ export function UsersActionDialog({ currentAppUser, open, onOpenChange }: Props)
       const data = await users();
       const parsed = userListSchema.parse(data);
 
-      const notAttachedAppUserList = parsed.filter((user: { id: string }) => {
-        return !currentAppUserList.some((currentUser: { id: string }) => currentUser.id === user.id);
-      });
+      const currentUserList = currentAppUserList.map((data: any) => ({
+        ...data.user,
+      }));
+
+      const notAttachedAppUserList = parsed.filter((user: { id: string }) =>
+        !currentUserList.some((currentUser: { id: string }) => currentUser.id === user.id)
+      );
+
       setNotAttachedAppUserList(notAttachedAppUserList);
     };
 
     fetchUsers();
-  }, []);
+  }, [currentAppUserList]);
 
   const isEdit = !!currentAppUser
   const form = useForm<UserForm>({
@@ -110,7 +104,7 @@ export function UsersActionDialog({ currentAppUser, open, onOpenChange }: Props)
       }
       : {
         user: '',
-        level: 1,
+        level: "1",
         isEdit,
       },
   })
@@ -118,56 +112,59 @@ export function UsersActionDialog({ currentAppUser, open, onOpenChange }: Props)
   const onSubmit = (values: UserForm) => {
     form.reset()
 
-    // const data = {
-    //   "email": values.email,
-    //   // "role": values.role,
-    //   "groupId": values.group,
-    //   "organizationId": values.organization,
-    // }
+    const data = {
+      "userId": values.user,
+      "appId": currentApp.id,
+      "level": values.level,
+    }
 
-    // if (isEdit) {
-    //   // Update user logic
-    //   console.log('Updating user:', values)
-    //   // axios post request
-    //   axios.put(`/users/${values.id}`, data)
-    //     .then((response) => {
-    //       console.log('User updated successfully:', response.data)
-    //       toast({
-    //         title: 'User updated successfully',
-    //         description: 'The user has been updated.',
-    //         variant: 'default',
-    //       })
-    //     })
-    //     .catch((error) => {
-    //       console.error('Error updating user:', error)
-    //       toast({
-    //         title: 'Error updating user',
-    //         description: error.message,
-    //         variant: 'destructive',
-    //       })
-    //     })
-    // } else {
-    //   // Create user logic
-    //   console.log('Creating user:', values)
-    //   // axios post request
-    //   axios.post('/users', data)
-    //     .then((response) => {
-    //       console.log('User created successfully:', response.data)
-    //       toast({
-    //         title: 'User created successfully',
-    //         description: 'The user has been created.',
-    //         variant: 'default',
-    //       })
-    //     })
-    //     .catch((error) => {
-    //       console.error('Error creating user:', error)
-    //       toast({
-    //         title: 'Error creating user',
-    //         description: error.message,
-    //         variant: 'destructive',
-    //       })
-    //     })
-    // }
+    console.log(data)
+
+    if (isEdit) {
+      // Update user logic
+      console.log('Updating user:', values)
+      // axios post request
+      axios.put(`/app-user-levels/${values.id}`, data)
+        .then((response) => {
+          console.log('User updated successfully:', response.data)
+          setReloadIndex((prev: boolean) => !prev)
+          toast({
+            title: 'User updated successfully',
+            description: 'The user has been updated.',
+            variant: 'default',
+          })
+        })
+        .catch((error) => {
+          console.error('Error updating user:', error)
+          toast({
+            title: 'Error updating user',
+            description: error.message,
+            variant: 'destructive',
+          })
+        })
+    } else {
+      // Create user logic
+      console.log('Creating user:', values)
+      // axios post request
+      axios.post('/app-user-levels', data)
+        .then((response) => {
+          console.log('User created successfully:', response.data)
+          setReloadIndex((prev: boolean) => !prev)
+          toast({
+            title: 'User created successfully',
+            description: 'The user has been created.',
+            variant: 'default',
+          })
+        })
+        .catch((error) => {
+          console.error('Error creating user:', error)
+          toast({
+            title: 'Error creating user',
+            description: error.message,
+            variant: 'destructive',
+          })
+        })
+    }
 
     console.log(values)
     toast({
@@ -206,53 +203,51 @@ export function UsersActionDialog({ currentAppUser, open, onOpenChange }: Props)
             >
               <FormField
                 control={form.control}
-                name='user'
+                name="user"
                 render={({ field }) => (
-                  <FormItem className='flex flex-col'>
-                    <FormLabel>Language</FormLabel>
+                  <FormItem className="flex flex-col">
+                    <FormLabel>User</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant='outline'
-                            role='combobox'
+                            variant="outline"
+                            role="combobox"
                             className={cn(
-                              'w-[200px] justify-between',
-                              !field.value && 'text-muted-foreground'
+                              "w-[200px] justify-between",
+                              !field.value && "text-muted-foreground"
                             )}
                           >
                             {field.value
-                              ? languages.find(
-                                (language) => language.value === field.value
-                              )?.label
-                              : 'Select language'}
-                            <CaretSortIcon className='w-4 h-4 ml-2 opacity-50 shrink-0' />
+                              ? notAttachedAppUserList.find(
+                                (user: any) => user.id === field.value
+                              )?.username || "Select user"
+                              : "Select user"}
+                            <CaretSortIcon className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className='w-[200px] p-0'>
+                      <PopoverContent className="w-[200px] p-0">
                         <Command>
-                          <CommandInput placeholder='Search language...' />
-                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandInput placeholder="Search user..." />
+                          <CommandEmpty>No user found.</CommandEmpty>
                           <CommandGroup>
                             <CommandList>
                               {notAttachedAppUserList.map((user: any) => (
                                 <CommandItem
+                                  key={user.id}
                                   value={user.id}
-                                  key={user.displayName}
                                   onSelect={() => {
-                                    form.setValue('user', user.id)
+                                    form.setValue("user", user.id);
                                   }}
                                 >
                                   <CheckIcon
                                     className={cn(
-                                      'mr-2 h-4 w-4',
-                                      user.id === field.value
-                                        ? 'opacity-100'
-                                        : 'opacity-0'
+                                      "mr-2 h-4 w-4",
+                                      user.id === field.value ? "opacity-100" : "opacity-0"
                                     )}
                                   />
-                                  {user.displayName}
+                                  {user.username}
                                 </CommandItem>
                               ))}
                             </CommandList>
@@ -261,7 +256,7 @@ export function UsersActionDialog({ currentAppUser, open, onOpenChange }: Props)
                       </PopoverContent>
                     </Popover>
                     <FormDescription>
-                      This is the language that will be used in the dashboard.
+                      This is the user that will be added to the escalation PIC.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -279,7 +274,7 @@ export function UsersActionDialog({ currentAppUser, open, onOpenChange }: Props)
                     <SelectDropdown
                       defaultValue={'1'}
                       onValueChange={field.onChange}
-                      placeholder='Select a role'
+                      placeholder='Select a level'
                       items={appUserLevelList}
                     />
                     <FormMessage />

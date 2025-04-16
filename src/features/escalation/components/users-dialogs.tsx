@@ -1,12 +1,12 @@
 import { useEscalation } from '../context/escalation-context'
-import { UsersActionDialog } from './users-action-dialog'
-import { UsersDeleteDialog } from './users-delete-dialog'
+import { EscalationActionDialog } from './escalation-action-dialog'
+import { EscalationRemoveUserDialog } from './escalation-remove-dialog'
 
 export function UsersDialogs() {
   const { open, setOpen, currentAppUser, setCurrentAppUser } = useEscalation()
   return (
     <>
-      <UsersActionDialog
+      <EscalationActionDialog
         key='user-add'
         open={open === 'add'}
         onOpenChange={() => setOpen('add')}
@@ -14,8 +14,8 @@ export function UsersDialogs() {
 
       {currentAppUser && (
         <>
-          <UsersDeleteDialog
-            key={`user-remove-${currentAppUser.id}`}
+          <EscalationRemoveUserDialog
+            key={`user-delete-${currentAppUser.id}`}
             open={open === 'remove'}
             onOpenChange={() => {
               setOpen('remove')
