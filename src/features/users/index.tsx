@@ -7,13 +7,23 @@ import { columns } from './components/users-columns'
 import { UsersDialogs } from './components/users-dialogs'
 import { UsersPrimaryButtons } from './components/users-primary-buttons'
 import { UsersTable } from './components/users-table'
-import UsersProvider from './context/users-context'
+import UsersProvider, { useUsers } from './context/users-context'
 import { userListSchema } from './data/schema'
 import { users } from './data/users'
 
 import { useEffect, useState } from 'react'
 
 export default function Users() {
+  return (
+    <UsersProvider>
+      <UsersContent />
+    </UsersProvider>
+  )
+}
+
+function UsersContent() {
+  const { reloadIndex } = useUsers()
+
   const [userList, setUserList]: any = useState([]);
 
   useEffect(() => {
@@ -26,10 +36,10 @@ export default function Users() {
     };
 
     fetchUsers();
-  }, []);
+  }, [reloadIndex]);
 
   return (
-    <UsersProvider>
+    <>
       <Header fixed>
         <Search />
         <div className='flex items-center ml-auto space-x-4'>
@@ -54,6 +64,6 @@ export default function Users() {
       </Main>
 
       <UsersDialogs />
-    </UsersProvider>
+    </>
   )
 }

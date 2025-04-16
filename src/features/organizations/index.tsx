@@ -9,11 +9,20 @@ import { columns } from './components/organizations-columns'
 import { OrganizationsDialogs } from './components/organizations-dialogs'
 import { OrganizationsPrimaryButtons } from './components/organizations-primary-buttons'
 import { OrganizationsTable } from './components/organizations-table'
-import OrganizationsProvider from './context/organizations-context'
+import OrganizationsProvider, { useOrganizations } from './context/organizations-context'
 import { organizations } from './data/organizations'
 import { organizationListSchema } from './data/schema'
 
 export default function Organizations() {
+  return (
+    <OrganizationsProvider>
+      <OrganizationsContent />
+    </OrganizationsProvider>
+  )
+}
+
+function OrganizationsContent() {
+  const { reloadIndex } = useOrganizations()
   const [organizationList, setOrganizationList]: any = useState([]);
 
   useEffect(() => {
@@ -26,10 +35,10 @@ export default function Organizations() {
     };
 
     fetchOrganizations();
-  }, []);
+  }, [reloadIndex]);
 
   return (
-    <OrganizationsProvider>
+    <>
       <Header fixed>
         <Search />
         <div className='flex items-center ml-auto space-x-4'>
@@ -54,6 +63,6 @@ export default function Organizations() {
       </Main>
 
       <OrganizationsDialogs />
-    </OrganizationsProvider>
+    </>
   )
 }

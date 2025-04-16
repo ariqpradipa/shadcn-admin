@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast'
 import { IconAlertTriangle } from '@tabler/icons-react'
 import axios from 'axios'
 import { useState } from 'react'
+import { useOrganizations } from '../context/organizations-context'
 import { Organization } from '../data/schema'
 
 interface Props {
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function OrganizationsDeleteDialog({ open, onOpenChange, currentRow }: Props) {
+  const { setReloadIndex } = useOrganizations()
   const [value, setValue] = useState('')
 
   const handleDelete = () => {
@@ -24,6 +26,7 @@ export function OrganizationsDeleteDialog({ open, onOpenChange, currentRow }: Pr
 
     axios.delete(`/organizations/${currentRow.id}`)
       .then(() => {
+        setReloadIndex((prev: boolean) => !prev);
         toast({
           title: 'Organizations deleted',
           description: `Organizations ${currentRow.name} has been deleted.`,
@@ -37,17 +40,7 @@ export function OrganizationsDeleteDialog({ open, onOpenChange, currentRow }: Pr
         })
       })
 
-    onOpenChange(false)
-    toast({
-      title: 'The following organization has been deleted:',
-      description: (
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>
-            {JSON.stringify(currentRow, null, 2)}
-          </code>
-        </pre>
-      ),
-    })
+    onOpenChange(false);
   }
 
   return (

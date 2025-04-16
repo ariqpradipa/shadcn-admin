@@ -35,6 +35,7 @@ import { groupListSchema } from '@/features/groups/data/schema'
 
 import { organizations } from '@/features/organizations/data/organizations'
 import { organizationListSchema } from '@/features/organizations/data/schema'
+import { useUsers } from '../context/users-context'
 
 const formSchema = z
   .object({
@@ -57,7 +58,7 @@ interface Props {
 }
 
 export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
-
+  const { setReloadIndex } = useUsers()
   const [groupList, setGroupList]: any = useState([]);
   const [organizationList, setOrganizationList]: any = useState([]);
 
@@ -117,7 +118,7 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
       // axios post request
       axios.put(`/users/${values.id}`, data)
         .then((response) => {
-          console.log('User updated successfully:', response.data)
+          setReloadIndex(prev => !prev)
           toast({
             title: 'User updated successfully',
             description: 'The user has been updated.',
@@ -133,12 +134,10 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
           })
         })
     } else {
-      // Create user logic
-      console.log('Creating user:', values)
       // axios post request
       axios.post('/users', data)
         .then((response) => {
-          console.log('User created successfully:', response.data)
+          setReloadIndex(prev => !prev);
           toast({
             title: 'User created successfully',
             description: 'The user has been created.',

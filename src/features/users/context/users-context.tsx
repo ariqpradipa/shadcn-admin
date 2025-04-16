@@ -9,6 +9,8 @@ interface UsersContextType {
   setOpen: (str: UsersDialogType | null) => void
   currentRow: User | null
   setCurrentRow: React.Dispatch<React.SetStateAction<User | null>>
+  reloadIndex: boolean
+  setReloadIndex: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const UsersContext = React.createContext<UsersContextType | null>(null)
@@ -20,9 +22,10 @@ interface Props {
 export default function UsersProvider({ children }: Props) {
   const [open, setOpen] = useDialogState<UsersDialogType>(null)
   const [currentRow, setCurrentRow] = useState<User | null>(null)
+  const [reloadIndex, setReloadIndex] = useState(false)
 
   return (
-    <UsersContext value={{ open, setOpen, currentRow, setCurrentRow }}>
+    <UsersContext value={{ open, setOpen, currentRow, setCurrentRow, reloadIndex, setReloadIndex }}>
       {children}
     </UsersContext>
   )

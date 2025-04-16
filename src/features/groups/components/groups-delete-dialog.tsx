@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast'
 import { IconAlertTriangle } from '@tabler/icons-react'
 import axios from 'axios'
 import { useState } from 'react'
+import { useGroups } from '../context/groups-context'
 import { Group } from '../data/schema'
 
 interface Props {
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function GroupsDeleteDialog({ open, onOpenChange, currentRow }: Props) {
+  const { setReloadIndex } = useGroups()
   const [value, setValue] = useState('')
 
   const handleDelete = () => {
@@ -24,6 +26,7 @@ export function GroupsDeleteDialog({ open, onOpenChange, currentRow }: Props) {
 
     axios.delete(`/groups/${currentRow.id}`)
       .then(() => {
+        setReloadIndex((prev: boolean) => !prev)
         toast({
           title: 'Group deleted',
           description: `Group ${currentRow.name} has been deleted.`,

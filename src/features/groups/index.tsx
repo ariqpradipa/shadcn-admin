@@ -9,11 +9,21 @@ import { columns } from './components/groups-columns'
 import { GroupsDialogs } from './components/groups-dialogs'
 import { GroupsPrimaryButtons } from './components/groups-primary-buttons'
 import { GroupsTable } from './components/groups-table'
-import GroupsProvider from './context/groups-context'
+import GroupsProvider, { useGroups } from './context/groups-context'
 import { groups } from './data/groups'
 import { groupListSchema } from './data/schema'
 
+
 export default function Groups() {
+  return (
+    <GroupsProvider>
+      <GroupsContent />
+    </GroupsProvider>
+  )
+}
+
+function GroupsContent() {
+  const { reloadIndex } = useGroups()
   const [groupList, setGroupList]: any = useState([]);
 
   useEffect(() => {
@@ -26,10 +36,10 @@ export default function Groups() {
     };
 
     fetchGroups();
-  }, []);
+  }, [reloadIndex]);
 
   return (
-    <GroupsProvider>
+    <>
       <Header fixed>
         <Search />
         <div className='flex items-center ml-auto space-x-4'>
@@ -54,6 +64,6 @@ export default function Groups() {
       </Main>
 
       <GroupsDialogs />
-    </GroupsProvider>
+    </>
   )
 }

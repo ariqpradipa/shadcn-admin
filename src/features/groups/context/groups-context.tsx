@@ -9,6 +9,8 @@ interface GroupsContextType {
   setOpen: (str: GroupsDialogType | null) => void
   currentRow: Group | null
   setCurrentRow: React.Dispatch<React.SetStateAction<Group | null>>
+  reloadIndex: boolean
+  setReloadIndex: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const GroupsContext = React.createContext<GroupsContextType | null>(null)
@@ -20,9 +22,10 @@ interface Props {
 export default function GroupsProvider({ children }: Props) {
   const [open, setOpen] = useDialogState<GroupsDialogType>(null)
   const [currentRow, setCurrentRow] = useState<Group | null>(null)
+  const [reloadIndex, setReloadIndex] = useState(false)
 
   return (
-    <GroupsContext value={{ open, setOpen, currentRow, setCurrentRow }}>
+    <GroupsContext value={{ open, setOpen, currentRow, setCurrentRow, reloadIndex, setReloadIndex }}>
       {children}
     </GroupsContext>
   )

@@ -25,6 +25,7 @@ import { toast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { useGroups } from '../context/groups-context'
 import { groups } from '../data/groups'
 import { Group, groupListSchema } from '../data/schema'
 
@@ -44,7 +45,7 @@ interface Props {
 }
 
 export function GroupsActionDialog({ currentRow, open, onOpenChange }: Props) {
-
+  const { setReloadIndex } = useGroups()
   const [groupList, setGroupList]: any = useState([]);
 
   useEffect(() => {
@@ -88,7 +89,7 @@ export function GroupsActionDialog({ currentRow, open, onOpenChange }: Props) {
       // axios post request
       axios.put(`/groups/${values.id}`, data)
         .then((response) => {
-          console.log('Group updated successfully:', response.data)
+          setReloadIndex((prev: boolean) => !prev)
           toast({
             title: 'Group updated successfully',
             description: 'The group has been updated.',
@@ -109,7 +110,7 @@ export function GroupsActionDialog({ currentRow, open, onOpenChange }: Props) {
       // axios post request
       axios.post('/groups', data)
         .then((response) => {
-          console.log('Group created successfully:', response.data)
+          setReloadIndex((prev: boolean) => !prev)
           toast({
             title: 'Group created successfully',
             description: 'The group has been created.',

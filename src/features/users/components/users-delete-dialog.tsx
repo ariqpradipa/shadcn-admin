@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast'
 import { IconAlertTriangle } from '@tabler/icons-react'
 import axios from 'axios'
 import { useState } from 'react'
+import { useUsers } from '../context/users-context'
 import { User } from '../data/schema'
 
 interface Props {
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
+  const { setReloadIndex } = useUsers()
   const [value, setValue] = useState('')
 
   const handleDelete = () => {
@@ -24,6 +26,7 @@ export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
 
     axios.delete(`/users/${currentRow.id}`)
       .then(() => {
+        setReloadIndex((prev: boolean) => !prev)
         toast({
           title: 'User deleted',
           description: `User ${currentRow.username} has been deleted.`,

@@ -25,6 +25,7 @@ import { toast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { useOrganizations } from '../context/organizations-context'
 import { organizations } from '../data/organizations'
 import { Organization, organizationListSchema } from '../data/schema'
 
@@ -44,7 +45,7 @@ interface Props {
 }
 
 export function OrganizationsActionDialog({ currentRow, open, onOpenChange }: Props) {
-
+  const { setReloadIndex } = useOrganizations()
   const [organizationList, setOrganizationList]: any = useState([]);
 
   useEffect(() => {
@@ -83,12 +84,10 @@ export function OrganizationsActionDialog({ currentRow, open, onOpenChange }: Pr
     }
 
     if (isEdit) {
-      // Update grou logic
-      console.log('Updating organization:', values)
       // axios post request
       axios.put(`/organizations/${values.id}`, data)
         .then((response) => {
-          console.log('Organization updated successfully:', response.data)
+          setReloadIndex((prev: boolean) => !prev)
           toast({
             title: 'Organization updated successfully',
             description: 'The organization has been updated.',
@@ -104,12 +103,10 @@ export function OrganizationsActionDialog({ currentRow, open, onOpenChange }: Pr
           })
         })
     } else {
-      // Create organization logic
-      console.log('Creating organization:', values)
       // axios post request
       axios.post('/organizations', data)
         .then((response) => {
-          console.log('Organization created successfully:', response.data)
+          setReloadIndex((prev: boolean) => !prev);
           toast({
             title: 'Organization created successfully',
             description: 'The organization has been created.',
@@ -125,16 +122,6 @@ export function OrganizationsActionDialog({ currentRow, open, onOpenChange }: Pr
           })
         })
     }
-
-    console.log(values)
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      ),
-    })
     onOpenChange(false)
   }
 
