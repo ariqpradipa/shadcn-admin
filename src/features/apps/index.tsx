@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { Input } from '@/components/ui/input'
@@ -74,7 +73,7 @@ export default function Apps() {
         <Search />
         <div className='flex items-center gap-4 ml-auto'>
           <ThemeSwitch />
-          <ProfileDropdown />
+          {/* <ProfileDropdown /> */}
         </div>
       </Header>
 

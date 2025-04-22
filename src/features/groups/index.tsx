@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { columns } from './components/groups-columns'
@@ -44,7 +43,7 @@ function GroupsContent() {
         <Search />
         <div className='flex items-center ml-auto space-x-4'>
           <ThemeSwitch />
-          <ProfileDropdown />
+          {/* <ProfileDropdown /> */}
         </div>
       </Header>
 
